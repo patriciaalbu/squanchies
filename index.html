@@ -1,9 +1,361 @@
+<html>
 <head>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js"></script>
     <script src="http://unpkg.com/d3-force-magnetic"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.3.4/chroma.min.js"></script>
-</head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+
+        var spectralType = 0,
+            absoluteMagnitude = 0,
+            rocky = 0,
+            gas = 1,
+            ice = 0;
+
+        var spectralTypeColors = ['#9bb0ff', '#aabfff', '#cad7ff', '#f8f7ff', '#fff4ea', '#ffd2a1', '#ffcc6f', '#ff7834', '#ff3122'];
+        var spectralTypeMasses = [60, 18, 3.2, 1.7, 1.1, 0.8, 0.3, 0.2, 0.1];
+
+        var spectralTypeRadiuses = [15, 7, 2.5, 1.3, 1.1, 0.9, 0.4, 0.25, 0.1];
+
+        var spectralTypes = ['0', 'B', 'A', 'F', 'G', 'K', 'M', 'L', 'T'];
+        var absoluteMagnitudes = ["+20", "+19", "+18", "+17", "+16", "+15", "+14", "+13", "+12", "+11", "+10", "+9", "+8", "+7", "+6", "+5", "+4", "+3", "+2", "+1", "0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15"];
+
+
+        $( function() {
+            var slider = $( "<div id='slider'></div>" ).insertAfter('.slider1' ).slider({
+                min: 0,
+                max: 8,
+                range: "min",
+                value: 0,
+                slide: function( event, ui ) {
+
+                    console.log('selected', ui.value);
+                    $('.stype').html(spectralTypes[ui.value]);
+                    spectralType = ui.value;
+
+                    $('#slider .ui-slider-range').css("background",  spectralTypeColors[spectralType]);
+                }
+            });
+
+            var slider2 = $( "<div id='slider22'></div>" ).insertAfter('.slider2' ).slider({
+                min: 0,
+                max: 35,
+                range: "min",
+                value: 0,
+                slide: function( event, ui ) {
+                    //console.log('selected', ui.value);
+                    $('.amag').html( absoluteMagnitudes[ui.value]);
+                    absoluteMagnitude = ui.value;
+                }
+            });
+
+
+            $( "#red" ).slider({
+                orientation: "horizontal",
+                min: 0,
+                max: 5,
+                range: "min",
+                value: 0,
+                slide: function( event, ui ) {
+                    $('.rocky').html( ui.value);
+                    rocky = ui.value;
+                }
+            });
+            $( "#green" ).slider({
+                orientation: "horizontal",
+                min: 0,
+                max: 5,
+                range: "min",
+                value: 1,
+                slide: function( event, ui ) {
+                    $('.gas').html( ui.value);
+                    gas = ui.value;
+                }
+            });
+            $( "#blue" ).slider({
+                orientation: "horizontal",
+                min: 0,
+                max: 5,
+                range: "min",
+                value: 0,
+                slide: function( event, ui ) {
+                    $('.ice').html( ui.value);
+                    ice = ui.value;
+                }
+            });
+        } );
+
+
+
+        startCustomLevel = function() {
+
+            $('.container').hide();
+            $('.game').show();
+
+            console.log(spectralType, absoluteMagnitude, rocky, gas, ice);
+            startLevel(spectralType, absoluteMagnitude, rocky, gas, ice);
+
+        }
+
+
+
+        $(document).keyup(function(e) {
+            if (e.keyCode === 27) {
+                //if (confirm("Are you sure?")) {
+                $('.game').hide();
+                $('.container').show();
+                end = undefined;
+                //}
+
+
+            }
+        });
+
+        startLevel = function(spectralType, absoluteMagnitude, rocky, gas, ice) {
+
+            var goldilocks1 = spectralTypeRadiuses[spectralType]*(100-absoluteMagnitudes[absoluteMagnitude]); // spectralType, absoluteMagnityure
+            var goldilocks2 = spectralTypeRadiuses[spectralType]*(100-absoluteMagnitudes[absoluteMagnitude])*[1+spectralTypeMasses[spectralType]];
+
+            var rockies = [];
+
+            for (var i=0; i< rocky; i++) {
+                rockies.push({ "name": "rocky" + i, "symbol": "r", "color": "#FF7700", "mass": (i+1)*0.17e-6, "r":  (i+1)*16e-6, "distance": (i+1)*1.39 });
+            }
+
+            for (var i=0; i< gas; i++) {
+                rockies.push({ "name": "gas" + i, "symbol": "g", "color": "#B5A642", "mass": 0.5*(i+1)*955e-6, "r":  0.5*(i+1)*177e-6, "distance": 0.5*(i+1)*5.203 });
+            }
+
+            for (var i=0; i< ice; i++) {
+                rockies.push({ "name": "ice" + i, "symbol": "i", "color": "#7093DB", "mass": 0.5*(i+1)*44e-6, "r":  0.5*(i+1)*97e-6, "distance": 0.5*(i+1)*12.18 });
+            }
+
+            // rockies.push({ "name": "mercury", "symbol": "☿", "color": "#D4CCC5", "mass": 0.17e-6, "r":  16e-6, "distance": 1.39 });
+            // rockies.push({ "name": "venus",   "symbol": "♀", "color": "#99CC32", "mass": 2.45e-6, "r":  40e-6, "distance": 1.723 });
+            // rockies.push({
+            //     "name": "earth",
+            //     "symbol": "♁",
+            //     "color": "#007FFF",
+            //     "mass": 3e-6,
+            //     "r": 43e-6,
+            //     "distance": 2,
+            //     //"satellites": [
+            //     //    { "name": "moon", "symbol": "☽", "color": "#A8A8A8", "mass": 0.037e-6, "r": 12e-6, "distance": 0.0026 }
+            //     //]
+            // });
+            //
+            // rockies.push({ "name": "mars", "symbol": "♂", "color": "#FF7700", "mass": 0.32e-6, "r":  23e-6, "distance": 3.524 });
+
+            var gases = [];
+
+            //gases.push({ "name": "jupiter", "symbol": "♃", "color": "#D98719", "mass":  955e-6, "r": 477e-6, "distance": 5.203 });
+            //gases.push({ "name": "saturn",  "symbol": "♄", "color": "#B5A642", "mass":  286e-6, "r": 402e-6, "distance": 9.539 });
+
+            var icies = [];
+
+            //icies.push({ "name": "uranus",  "symbol": "⛢", "color": "#7093DB", "mass":   44e-6, "r": 170e-6, "distance": 19.18 });
+            //icies.push({ "name": "neptune", "symbol": "♆", "color": "#7093DB", "mass":   52e-6, "r": 165e-6, "distance": 30.06 });
+
+            load([
+                {
+                    "name": "sun",
+                    "symbol": "s",
+                    "color": spectralTypeColors[spectralType],
+                    "mass": spectralTypeMasses[spectralType],
+                    "r": spectralTypeRadiuses[spectralType] * 46e-6,
+                    "distance": 0,
+                    "satellites": rockies.concat(gases).concat(icies)
+                }
+            ], goldilocks1, goldilocks2);
+        }
+
+    </script>
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+
+        html, body {
+            margin: 0px;
+        }
+        canvas {
+            display: block;
+        }
+
+        #red, #green, #blue {
+            float: left;
+            clear: left;
+            width: 300px;
+            margin: 15px;
+        }
+
+        #red .ui-slider-range { background: #FF7700; }
+        #red .ui-slider-handle { border-color: #FF7700; }
+        #green .ui-slider-range { background: #B5A642; }
+        #green .ui-slider-handle { border-color: #B5A642; }
+        #blue .ui-slider-range { background: #7093DB; }
+        #blue .ui-slider-handle { border-color: #7093DB; }
+
+    </style>
+</head>
 <body>
-test
+
+<div class="game" style="display:none">
+
+    <div id="hud" style="position: absolute; right:0; color: red; text-align: right;">
+        <div id="score"></div>
+        <div id="score1"></div>
+        <div id="countdown1"></div>
+        <div id="countdown"></div>
+    </div>
+    <canvas id="canvas"></canvas>
+    <div id="info">
+        <span id="au-100px-scale"></span>&nbsp;AU
+        <svg width="100px" height="6px">
+            <path d="M0,0V6H100V0" stroke="darkgrey" stroke-width="1.5" fill="transparent"></path>
+        </svg>
+    </div>
+</div>
+
+<script src="index.js"></script>
+</div>
+
+<div class="container" style="margin-top: 100px;">
+
+
+    <div class="row">
+        <div class="col-md-4">
+
+        </div>
+
+        <div class="col-md-4" style="text-align: center;">
+            <p><button type="button" class="btn btn-primary btn-lg">
+                New Game
+            </button></p>
+            <p><button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+                Custom Level
+            </button></p>
+            <p><button type="button" class="btn btn-primary btn-lg"  data-toggle="modal" data-target="#helpModal">
+                How to Play
+            </button></p>
+            <p><button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#leaderboardsModal">
+                Leaderboards
+            </button></p>
+        </div>
+
+        <div class="col-md-4">
+
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  style="text-align: left;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">How to play</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-12">
+                        How to play
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="leaderboardsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  style="text-align: left;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Leaderboards</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-12">
+                        leaderboards
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  style="text-align: left;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Customize your Solar System</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3>Star Configuration</h3>
+                        <div class="well">
+                            <p>Spectral Type: <span class="stype" style="font-weight: bold;">0</span></p>
+                            <div class="slider1"></div>
+                            <br/><br/>
+                            <p>Absolute Magnitude:  <span class="amag" style="font-weight: bold;">+20</span></p>
+                            <div class="slider2"></div>
+                        </div>
+                        <br/>
+                        <h3>Planets Configuration</h3>
+                        <div class="well" style="padding-bottom: 45px;">
+                            <p>Number of Rocky Planets: <span class="rocky" style="font-weight: bold;">1</span></p>
+                            <div id="red"></div>
+
+                            <p>Number of Gas Planets: <span class="gas" style="font-weight: bold;">1</span></p>
+                            <div id="green"></div>
+
+                            <p>Number of Ice Planets: <span class="ice" style="font-weight: bold;">1</span></p>
+                            <div id="blue"></div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-6">
+                        <img src="stellar-classification.png"/>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="startCustomLevel();" data-dismiss="modal">Start Level</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
+</html>
+
