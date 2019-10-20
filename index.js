@@ -90,13 +90,18 @@ const forceSim = d3.forceSimulation()
 function ticked() {
 
     if (end) {
-
-        $('#score1').html('Score: ' + (score + (1000 - score) * planetsInside));
+        $('#sacrifices').html('Sacrifices: ' + Math.abs(score));
+        $('#score1').html('Potential survivors: ' + (score + (1000 - score) * planetsInside));
 
         var remaining = end - new Date().getTime();
 
         if (remaining <= 0) {
-            alert('game over. You have ' + planetsInside + ' planets in goldilocks and you fired ' + score + ' times. Your final score is ' + (score + (1000 - score) * planetsInside));
+
+            var finalScore = (score + (1000 - score) * planetsInside);
+            if (finalScore < 0) {
+                finalScore = 0;
+            }
+            alert('Game over. You have ' + planetsInside + ' planets in Goldilocks with ' +  finalScore + ' potential survirors. There were ' + Math.abs(score) + ' sacrifices.');
             score = 0;
             end = undefined;
             $('.container').show();
@@ -237,7 +242,7 @@ function ticked() {
     }
 
     planetsInside = planetsInside1;
-    $('#score').html("planetsInside: " +planetsInside);
+    $('#score').html("Planets inside Goldilocks: " +planetsInside);
 
     var minDistance = distances[1];
     closestPlanetIdx = 1;
@@ -284,8 +289,8 @@ function ticked() {
         ctx.closePath();
     } else {
         // rock on its way
-        ctx.strokeStyle = '#ff00d0';
-        ctx.lineWidth = nodes[rock.targetIdx].r * bodyDistortion*TRAIL_THICKNESS*F;
+        ctx.strokeStyle = '#e9eeff';
+        ctx.lineWidth = 60000000;
         ctx.beginPath();
         ctx.moveTo(nodes[rock.targetIdx].x*F, nodes[rock.targetIdx].y*F);
         ctx.lineTo((rock.x - width/2)*F, (rock.y - height/2)*F);
@@ -302,7 +307,7 @@ function ticked() {
         rock.xr = (1-percent)*nodes[rock.targetIdx].x*F + percent*(rock.x - width/2)*F;
         rock.yr = (1-percent)*nodes[rock.targetIdx].y*F + percent*(rock.y - height/2)*F;
 
-        ctx.fillStyle = '#ff00d0';
+        ctx.fillStyle = '#e9eeff';
         ctx.beginPath();
         ctx.arc(rock.xr, rock.yr, forceSim.nodes()[rock.targetIdx]['r']*2000*F, 0, TAU);
         ctx.fill();
