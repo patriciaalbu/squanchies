@@ -372,6 +372,10 @@ function load(bodies, gl1, gl2) { //jsonFile instead of bodies
     goldilocks1 = gl1;
     goldilocks2 = gl2;
 
+    if (currentLevel == 0 || currentLevel == 1) {
+        previousScore = 0;
+    }
+
     ownBodies = bodies;
     //d3.json(jsonFile, (error, bodies) => {
         const maxDistance = d3.max(bodies.map(d => d3.max(d.satellites.map(s => d.distance + s.distance))));
