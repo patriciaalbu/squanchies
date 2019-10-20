@@ -1,0 +1,7 @@
+
+Bjavascript:S1442h" Remove this usage of alert(...).(çÀS8¤Ÿ—¿Ş-
+gjavascript:S2814ù"CRename "i" as this name is already used in declaration at line 238.(ã’ë×8¤Ÿ—¿Ş-
+ejavascript:UnusedVariable±"3Remove the declaration of the unused 'yd' variable.(Õ«³®ûÿÿÿÿ8¤Ÿ—¿Ş-
+`javascript:UnusedVariable°"3Remove the declaration of the unused 'xd' variable.(±—™8¤Ÿ—¿Ş-
+^javascript:S1854±"5Remove this useless assignment to local variable "yd"(Õ«³®ûÿÿÿÿ8¤Ÿ—¿Ş-
+Yjavascript:S1854°"5Remove this useless assignment to local variable "xd"(±—™8¤Ÿ—¿Ş-
