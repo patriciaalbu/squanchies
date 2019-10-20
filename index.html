@@ -19,7 +19,6 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
-
         var spectralType = 4,
             absoluteMagnitude = 5,
             rocky = 3,
@@ -115,22 +114,30 @@
             $('.container').hide();
             $('.game').show();
 
-
-
             if (level === 1) {
+                currentLevel = 1;
                 startLevel(5, 14, 3, 1, 1);
+
             }
             if (level === 2) {
+                currentLevel = 2;
                 startLevel(3, 9, 3, 1, 1);
+
             }
             if (level === 3) {
+                currentLevel = 3;
                 startLevel(4, 5, 3, 1, 0);
+
             }
             if (level === 4) {
+                currentLevel = 4;
                 startLevel(2, 5, 2, 1, 0);
+
             }
             if (level === 5) {
+                currentLevel = 5;
                 startLevel(1, 0, 5, 0, 1);
+
             }
         }
 
@@ -239,6 +246,8 @@
 <div class="game" style="display:none">
 
     <div id="hud" style="position: absolute; right:0; color: white; text-align: right;">
+        <div id="level"></div>
+        <div id="prev"></div>
         <div id="sacrifices"></div>
         <div id="score"></div>
         <div id="score1"></div>
@@ -300,7 +309,15 @@
 
                 <div class="row">
                     <div class="col-md-12">
-                        How to play
+                        <p>You come from a super advanced civilization capable of Faster-Than-Light space travel.</p>
+                        <p>Your home solar system was destroyed when its star became a supernova and exploded, leaving you in search for new homes.</p>
+                        <p>Your mission is to locate new solar systems in their formation throughout the galaxy and help them form habitable worlds, as many as possible in the limited time that you have.</p>
+                        <p>Your spaceship can capture and slingshot asteroids, guiding them to impact the nearest planets and changing their orbits.</p>
+                        <p>The spaceship aims the closest planet.</p>
+                        <p>Click to capture and slingshot an asteroid into the targeted planet, in order to change its orbit. You can guide only one asteroid at a time.</p>
+                        <p>Every time you armageddon a planet, one member of your crew sacrifices himself for the greater good.</p>
+                        <p>The aim of the level is to have at the end of countdown as many planets as possible in the Goldilocks zone, so that you maximize the chances of survival in the new solar system.</p>
+                        <p>The score takes into account the number of sacrifices and the number of resulted survivors. The games ends when all the levels are complete, or one level results in no survivors.</p>
                     </div>
                 </div>
             </div>
@@ -323,9 +340,9 @@
 
                 <div class="row">
                     <div class="col-md-12">
-                        <table>
+                        <table style="text-align: left;">
                             <tr>
-                                <th>Name</th>
+                                <th style="padding-right: 100px">Name</th>
                                 <th>Score</th>
                             </tr>
                             <tr>
@@ -373,11 +390,11 @@
 
                 <div class="row">
                     <div class="col-md-12" style="text-align: center">
-                        <p><button type="button" class="btn btn-primary" onclick="newGane(1)" data-dismiss="modal">Level 1</button></p>
-                        <p><button type="button" class="btn btn-primary" onclick="newGane(2)" data-dismiss="modal">Level 2</button></p>
-                        <p><button type="button" class="btn btn-primary" onclick="newGane(3)" data-dismiss="modal">Level 3</button></p>
-                        <p><button type="button" class="btn btn-primary" onclick="newGane(4)" data-dismiss="modal">Level 4</button></p>
-                        <p><button type="button" class="btn btn-primary" onclick="newGane(5)" data-dismiss="modal">Level 5</button></p>
+                        <p><button type="button" class="btn btn-primary" onclick="newGane(1)" data-dismiss="modal">Level 1 (ST:K, AM:+8, R:3, G:1, I:1)</button></p>
+                        <p><button type="button" class="btn btn-primary" onclick="newGane(2)" data-dismiss="modal">Level 2 (ST:F, AM:+11, R:3, G:1, I:1)</button></p>
+                        <p><button type="button" class="btn btn-primary" onclick="newGane(3)" data-dismiss="modal">Level 3 (ST:G, AM:+15, R:3, G:1, I:0)</button></p>
+                        <p><button type="button" class="btn btn-primary" onclick="newGane(4)" data-dismiss="modal">Level 4 (ST:A, AM:+15, R:2, G:1, I:0)</button></p>
+                        <p><button type="button" class="btn btn-primary" onclick="newGane(5)" data-dismiss="modal">Level 5 (ST:B, AM:+20, R:5, G:0, I:1)</button></p>
                     </div>
                 </div>
 

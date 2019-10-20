@@ -44,6 +44,8 @@ var score = 0;
 
 var end = undefined;
 
+var currentLevel = 0;
+var previousScore = 0;
 
 // Size canvas
 d3.select('#canvas')
@@ -90,22 +92,51 @@ const forceSim = d3.forceSimulation()
 function ticked() {
 
     if (end) {
+
+        var finalScore = (score + 1000*planetsInside);
+        if (finalScore < 0) {
+            finalScore = 0;
+        }
+
+        $('#level').html('Level: ' + currentLevel);
+        $('#prev').html('Previous survivors: ' + previousScore);
         $('#sacrifices').html('Sacrifices: ' + Math.abs(score));
-        $('#score1').html('Potential survivors: ' + (score + (1000 - score) * planetsInside));
+        $('#score1').html('Potential survivors: ' + finalScore);
 
         var remaining = end - new Date().getTime();
 
         if (remaining <= 0) {
+            if (finalScore == 0) {
+                alert('Game over. You have ' + planetsInside + ' planets in Goldilocks with ' +  finalScore + ' potential survirors. There were ' + Math.abs(score) + ' sacrifices.');
 
-            var finalScore = (score + (1000 - score) * planetsInside);
-            if (finalScore < 0) {
-                finalScore = 0;
+                score = 0;
+                end = undefined;
+                if (previousScore > 0) {
+                    alert('Your final score is: ' + previousScore);
+                }
+                previousScore = 0;
+                currentLevel = 0;
+
+                $('.container').show();
+                $('.game').hide();
+            } else {
+                previousScore += finalScore;
+                if (currentLevel > 0 && currentLevel < 5) {
+                    currentLevel +=1;
+                    alert('Your final score so far is: ' + previousScore + ". Now you will proceed to level " + currentLevel);
+                    score = 0;
+                    end = undefined;
+                    newGane(currentLevel);
+                } else if (currentLevel == 5) {
+                    alert('Your final score is: ' + previousScore);
+                    $('.container').show();
+                    $('.game').hide();
+                    score = 0;
+                    end = undefined;
+                }
+
             }
-            alert('Game over. You have ' + planetsInside + ' planets in Goldilocks with ' +  finalScore + ' potential survirors. There were ' + Math.abs(score) + ' sacrifices.');
-            score = 0;
-            end = undefined;
-            $('.container').show();
-            $('.game').hide();
+
         } else {
             $('#countdown1').html('Remaining time: ' + (remaining / 1000).toFixed(2) + ' seconds');
         }
@@ -277,7 +308,7 @@ function ticked() {
 
     if (!rock.enabled) {
         //console.log(mouse.isDown);
-        ctx.strokeStyle = '#00ff00';
+        ctx.strokeStyle = '#ff0000';
         ctx.lineWidth = 60000000;//nodes[closestPlanetIdx].r * bodyDistortion*TRAIL_THICKNESS*F;
         //console.log(ctx.lineWidth);
         ctx.beginPath();
@@ -289,7 +320,7 @@ function ticked() {
         ctx.closePath();
     } else {
         // rock on its way
-        ctx.strokeStyle = '#e9eeff';
+        ctx.strokeStyle = '#fff710';
         ctx.lineWidth = 60000000;
         ctx.beginPath();
         ctx.moveTo(nodes[rock.targetIdx].x*F, nodes[rock.targetIdx].y*F);
@@ -340,18 +371,6 @@ function load(bodies, gl1, gl2) { //jsonFile instead of bodies
 
     goldilocks1 = gl1;
     goldilocks2 = gl2;
-
-    for (var i=1; i < bodies[0]['satellites'].length; i++) {
-        console.log(bodies[0]['satellites'][i].name);
-        // if ("goldilocks1" === bodies[0]['satellites'][i].name) {
-        //     goldilocksIdx1 = 1+i;
-        // }
-        // if ("goldilocks2" === bodies[0]['satellites'][i].name) {
-        //     goldilocksIdx2 = 1+i;
-        // }
-    }
-
-    // console.log("goldilocks", goldilocksIdx1, goldilocksIdx2);
 
     ownBodies = bodies;
     //d3.json(jsonFile, (error, bodies) => {
@@ -419,7 +438,6 @@ function load(bodies, gl1, gl2) { //jsonFile instead of bodies
         }
 
         end = new Date().getTime() + 60000;
-    //});
 }
 
 // Event handlers
