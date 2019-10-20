@@ -120,19 +120,28 @@ function ticked() {
                 $('.container').show();
                 $('.game').hide();
             } else {
-                previousScore += finalScore;
                 if (currentLevel > 0 && currentLevel < 5) {
+                    previousScore += finalScore;
                     currentLevel +=1;
                     alert('Your final score so far is: ' + previousScore + ". Now you will proceed to level " + currentLevel);
                     score = 0;
                     end = undefined;
                     newGane(currentLevel);
                 } else if (currentLevel == 5) {
+                    previousScore += finalScore;
                     alert('Your final score is: ' + previousScore);
-                    $('.container').show();
-                    $('.game').hide();
                     score = 0;
                     end = undefined;
+                    $('.container').show();
+                    $('.game').hide();
+                } else {
+                    alert('Your final score is: ' + finalScore);
+                    score = 0;
+                    end = undefined;
+                    previousScore = 0;
+                    currentLevel = 0;
+                    $('.container').show();
+                    $('.game').hide();
                 }
 
             }
